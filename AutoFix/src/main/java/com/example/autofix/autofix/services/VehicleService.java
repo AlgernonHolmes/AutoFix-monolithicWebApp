@@ -11,10 +11,16 @@ import java.util.ArrayList;
 @Service
 public class VehicleService {
 
-    /*  CRUD OPERATIONS */
+    /* Repository layer methods */
 
     @Autowired
     VehicleRepository vehicleRepository;
+
+    /*--------------------------------------------------------------------------------------------------------
+     * getVehicles: method to find all vehicles in the DB;
+     *
+     * @return - a list with all vehicles;
+     --------------------------------------------------------------------------------------------------------*/
 
     public ArrayList<VehicleEntity> getVehicles(){
         return (ArrayList<VehicleEntity>) vehicleRepository.findAll();

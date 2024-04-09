@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "vehicles")
 @Data
@@ -24,4 +26,9 @@ public class VehicleEntity {
     private int fabricationYear;
     private String engineType;
     private int numSeats;
+    /* next attribute stores the id of every repair
+       related to a specific vehicle */
+    @ElementCollection
+    private List<Long> idRepair;
+
 }
