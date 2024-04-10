@@ -26,6 +26,7 @@ public class VehicleEntity {
     private int fabricationYear;
     private String engineType;
     private int numSeats;
+    private int milage;
     /* next attribute stores the id of every repair
        related to a specific vehicle */
     @ElementCollection

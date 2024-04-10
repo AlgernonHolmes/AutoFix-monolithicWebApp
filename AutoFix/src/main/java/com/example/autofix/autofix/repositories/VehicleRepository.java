@@ -9,7 +9,9 @@ import java.util.List;
 @Repository
 public interface VehicleRepository extends JpaRepository<VehicleEntity, Long> {
 
-    public List<VehicleEntity> findAllByRegistrationPlate(String registrationPlate);
+    public VehicleEntity findByRegistrationPlate(String registrationPlate);
 
-    public VehicleEntity findByEngineType(String engineType);
-}
+    public List<VehicleEntity> findAllByEngineType(String engineType);
+
+
+ }

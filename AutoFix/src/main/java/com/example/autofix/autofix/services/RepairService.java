@@ -10,12 +10,20 @@ import java.util.ArrayList;
 @Service
 public class RepairService {
 
-    /* CRUD OPERATIONS */
+    /* Repository layer methods */
 
     @Autowired
     RepairRepository repairRepository;
 
+    /*--------------------------------------------------------------------------------------------------------
+     * getRepairs: method to find all repairs in the DB;
+     *
+     * @return - a list with all repairs;
+     --------------------------------------------------------------------------------------------------------*/
+
     public ArrayList<RepairEntity> getRepairs(){
         return (ArrayList<RepairEntity>) repairRepository.findAll();
     }
+
+
 }

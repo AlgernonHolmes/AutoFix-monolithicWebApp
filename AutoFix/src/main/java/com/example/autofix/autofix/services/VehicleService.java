@@ -16,6 +16,8 @@ public class VehicleService {
     @Autowired
     VehicleRepository vehicleRepository;
 
+    /* GET OPERATIONS */
+
     /*--------------------------------------------------------------------------------------------------------
      * getVehicles: method to find all vehicles in the DB;
      *
@@ -25,6 +27,26 @@ public class VehicleService {
     public ArrayList<VehicleEntity> getVehicles(){
         return (ArrayList<VehicleEntity>) vehicleRepository.findAll();
     }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * getByPlate: method to find specific vehicle in DB by plate;
+     *
+     * @return - a vehicle with the specific plate;
+     --------------------------------------------------------------------------------------------------------*/
+
+    public VehicleEntity getByPlate(String rPlate){return (VehicleEntity) vehicleRepository.findByRegistrationPlate(rPlate);}
+
+    /*--------------------------------------------------------------------------------------------------------
+     * getAllByEngine: method to find all vehicles in DB with the same engineType;
+     *
+     * @return - all vehicles with said engineType;
+     --------------------------------------------------------------------------------------------------------*/
+
+    public ArrayList<VehicleEntity> getAllByEngine(String engineT){
+        return (ArrayList<VehicleEntity>) vehicleRepository.findAllByEngineType(engineT);
+    }
+
+
 
 
 }
