@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
+@Entity
 @Table(name = "repairs")
 @Data
 @NoArgsConstructor
