@@ -16,7 +16,7 @@ public class VehicleService {
     @Autowired
     VehicleRepository vehicleRepository;
 
-    /* GET OPERATIONS */
+   /* GET OPERATIONS */
 
     /*--------------------------------------------------------------------------------------------------------
      * getVehicles: method to find all vehicles in the DB;
@@ -36,14 +36,53 @@ public class VehicleService {
 
     public VehicleEntity getByPlate(String rPlate){return (VehicleEntity) vehicleRepository.findByRegistrationPlate(rPlate);}
 
+    /* POST OPERATIONS */
+
     /*--------------------------------------------------------------------------------------------------------
-     * getAllByEngine: method to find all vehicles in DB with the same engineType;
+     * createVehicle: method to find create a vehicle in the DB;
      *
-     * @return - all vehicles with said engineType;
+     * @return - null;
      --------------------------------------------------------------------------------------------------------*/
 
-    public ArrayList<VehicleEntity> getAllByEngine(String engineT){
-        return (ArrayList<VehicleEntity>) vehicleRepository.findAllByEngineType(engineT);
+    public void createVehicle(VehicleEntity Vehicle){
+        vehicleRepository.save(Vehicle);
+    }
+
+    /* UPDATE OPERATIONS */
+
+    /* UPDATE OPERATIONS */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * updateVehicle: method to update a vehicle in the DB;
+     *
+     * @param id - the id of the vehicle to be updated;
+     * @param updatedVehicle - the updated vehicle object;
+     --------------------------------------------------------------------------------------------------------*/
+
+
+    /* UPDATE OPERATIONS */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * updateVehicle: method to update a vehicle in the DB;
+     *
+     * @param updatedVehicle - the updated vehicle;
+     --------------------------------------------------------------------------------------------------------*/
+
+    public void updateVehicle(VehicleEntity updatedVehicle){
+        vehicleRepository.save(updatedVehicle);
+    }
+
+    /* DELETE OPERATIONS */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * deleteVehicle: method to delete a vehicle in the DB;
+     *
+     * @param id - the id of the vehicle to delete;
+     * @return - null
+     --------------------------------------------------------------------------------------------------------*/
+
+    public void deleteVehicle(Long id){
+        vehicleRepository.deleteById(id);
     }
 
 
