@@ -17,6 +17,7 @@ public class RepairService {
 
     @Autowired
     RepairRepository repairRepository;
+    @Autowired
     VehicleRepository vehicleRepository;
 
     /* GET OPERATIONS */
@@ -45,7 +46,7 @@ public class RepairService {
     public void createRepair(String plate, RepairEntity repair){
         RepairEntity savedRepair = repairRepository.save(repair);
         Long rId = savedRepair.getId();
-        VehicleEntity lVehicle = vehicleRepository.findByRegistrationPlate(plate);
+        VehicleEntity lVehicle = vehicleRepository.findByRegistrationPlateWithRepairs(plate);
         List<Long> vehicleRepairList = lVehicle.getIdRepair();
         vehicleRepairList.add(rId);
         lVehicle.setIdRepair(vehicleRepairList);

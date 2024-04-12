@@ -6,7 +6,8 @@ import com.example.autofix.autofix.repositories.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class VehicleService {
@@ -24,8 +25,8 @@ public class VehicleService {
      * @return - a list with all vehicles;
      --------------------------------------------------------------------------------------------------------*/
 
-    public ArrayList<VehicleEntity> getVehicles(){
-        return (ArrayList<VehicleEntity>) vehicleRepository.findAll();
+    public List<VehicleEntity> getVehicles(){
+        return (List<VehicleEntity>) vehicleRepository.findAll();
     }
 
     /*--------------------------------------------------------------------------------------------------------

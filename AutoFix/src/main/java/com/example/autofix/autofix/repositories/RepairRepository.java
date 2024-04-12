@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface RepairRepository extends JpaRepository<RepairEntity, Long> {
 
+
     public List<RepairEntity> findAllByRepairType(String repairType);
 }

@@ -28,5 +28,5 @@ public class RepairEntity {
     private Date exitCDate;
     /* next id will be the id
        of the corresponding vehicle */
-    private Long vehicleId;
+    private String vehiclePlate;
 }

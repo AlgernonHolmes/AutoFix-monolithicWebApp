@@ -1,5 +1,7 @@
 package com.example.autofix.autofix.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +31,8 @@ public class VehicleEntity {
     private int milage;
     /* next attribute stores the id of every repair
        related to a specific vehicle */
-    @ElementCollection
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> idRepair;
 
 }
