@@ -11,7 +11,7 @@ public interface VehicleRepository extends JpaRepository<VehicleEntity, Long> {
 
     public VehicleEntity findByRegistrationPlate(String registrationPlate);
 
-    public List<VehicleEntity> findAllByEngineType(String engineType);
+
 
 
  }

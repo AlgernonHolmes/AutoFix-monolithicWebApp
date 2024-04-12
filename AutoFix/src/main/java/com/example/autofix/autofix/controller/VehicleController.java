@@ -1,7 +1,13 @@
 package com.example.autofix.autofix.controller;
 
 
+import com.example.autofix.autofix.entities.VehicleEntity;
+import com.example.autofix.autofix.services.VehicleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("API/Vehicle")

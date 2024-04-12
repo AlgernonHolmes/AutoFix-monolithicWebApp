@@ -50,18 +50,6 @@ public class VehicleService {
 
     /* UPDATE OPERATIONS */
 
-    /* UPDATE OPERATIONS */
-
-    /*--------------------------------------------------------------------------------------------------------
-     * updateVehicle: method to update a vehicle in the DB;
-     *
-     * @param id - the id of the vehicle to be updated;
-     * @param updatedVehicle - the updated vehicle object;
-     --------------------------------------------------------------------------------------------------------*/
-
-
-    /* UPDATE OPERATIONS */
-
     /*--------------------------------------------------------------------------------------------------------
      * updateVehicle: method to update a vehicle in the DB;
      *
