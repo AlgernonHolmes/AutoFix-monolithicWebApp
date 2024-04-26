@@ -74,6 +74,16 @@ public class VehicleService {
         vehicleRepository.deleteById(id);
     }
 
+    /*--------------------------------------------------------------------------------------------------------
+     * deleteVehicleByPlate: method to delete a vehicle in the DB;
+     *
+     * @param plate - the plate of the vehicle to delete;
+     * @return - null
+     --------------------------------------------------------------------------------------------------------*/
+
+    public void deleteVehicleByPlate(String plate){
+        vehicleRepository.deleteByRegistrationPlate(plate);
+    }
 
 
 

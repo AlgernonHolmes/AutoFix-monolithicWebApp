@@ -10,5 +10,5 @@ import java.util.List;
 public interface RepairRepository extends JpaRepository<RepairEntity, Long> {
 
 
-    public List<RepairEntity> findAllByRepairType(String repairType);
+    public List<RepairEntity> findAllByVehiclePlate(String plate);
 }

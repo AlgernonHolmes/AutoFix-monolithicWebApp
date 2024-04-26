@@ -32,6 +32,17 @@ public class RepairController {
         return repairService.getRepairs();
     }
 
+    /*--------------------------------------------------------------------------------------------------------
+     * getRepairsByPlate: method to find all repairs in the DB with the correspondant plate;
+     *
+     * @param plate - the plate of the vehicle;
+     * @return - a list with all repairs with said plate;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/{plate}")
+    public List<RepairEntity> getRepairsByPlate(@PathVariable String plate){
+        return repairService.getRepairsByPlate(plate);
+    }
+    
     /* POST OPERATIONS */
 
     /*--------------------------------------------------------------------------------------------------------

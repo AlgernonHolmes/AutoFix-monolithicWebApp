@@ -93,5 +93,16 @@ public class VehicleController {
         vehicleService.deleteVehicle(id);
     }
 
+    /*--------------------------------------------------------------------------------------------------------
+     * deleteVehicleByPlate: method to delete a vehicle in the DB;
+     *
+     * @param plate - the plate of the vehicle to delete;
+     * @return - null
+     --------------------------------------------------------------------------------------------------------*/
+
+    @DeleteMapping("/plate/{plate}")
+    public void deleteVehicleByPlate(@PathVariable String plate){
+        vehicleService.deleteVehicleByPlate(plate);
+    }
 
 }
