@@ -7,9 +7,11 @@ import com.example.autofix.autofix.repositories.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RepairService {
@@ -39,6 +41,7 @@ public class RepairService {
      * @param plate - the plate of the vehicle;
      * @return - a list with all repairs with said plate;
      --------------------------------------------------------------------------------------------------------*/
+
     public ArrayList<RepairEntity> getRepairsByPlate(String plate){
         return (ArrayList<RepairEntity>) repairRepository.findAllByVehiclePlate(plate);
     }
@@ -188,8 +191,105 @@ public class RepairService {
 
 
 
+    /* SURCHARGES */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * antiquitySurcharge: method to calculate antiquity surcharge;
+     *
+     * @param price - repair price;
+     * @param fabricationYear - fabrication year;
+     * @param type - vehicle type;
+     * @return - the new price with the surcharge;
+     --------------------------------------------------------------------------------------------------------*/
+
+    public double antiquitySurcharge(double price, int fabricationYear, String type){
+
+        int antiquity = 2024 - fabricationYear;
+        double discountPercentage = 0.0;
+
+        if (antiquity >= 6 && antiquity <= 10) {
+            if (type.equals("sedan") || type.equals("hatchback")) {
+                discountPercentage = 0.05;
+            } else {
+                discountPercentage = 0.07;
+            }
+        } else if (antiquity >= 11 && antiquity <= 15) {
+            if (type.equals("sedan") || type.equals("hatchback")) {
+                discountPercentage = 0.09;
+            } else {
+                discountPercentage = 0.11;
+            }
+        } else if (antiquity >= 16) {
+            if (type.equals("sedan") || type.equals("hatchback")) {
+                discountPercentage = 0.15;
+            } else {
+                discountPercentage = 0.20;
+            }
+        }
+
+        double discountValue = price * discountPercentage;
+        double newPrice = price + discountValue;
+
+        return newPrice;
+
+    }
 
 
+    /*--------------------------------------------------------------------------------------------------------
+     * delaySurcharge: method to calculate antiquity surcharge;
+     *
+     * @param price - repair price;
+     * @param exitVDate - date given to take the vehicle;
+     * @param exitCDate - date the customer took the vehicle;
+     * @return - the new price with the surcharge;
+     --------------------------------------------------------------------------------------------------------*/
+    public double delaySurcharge(double price, Date exitVDate, Date exitCDate) {
+        long diffInMillis = exitCDate.getTime() - exitVDate.getTime();
+        int diffInDays = (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+        if (diffInDays <= 0) {
+            return price;
+        }
+        double delaySurchargePercentage = 0.05;
+        double delaySurcharge = price * (double)diffInDays * delaySurchargePercentage;
+        double newPrice = price + delaySurcharge;
+        return newPrice;
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * mileageSurcharge: method to calculate mileage surcharge;
+     *
+     * @param price - repair price;
+     * @param mileage - mileage of the vehicle;
+     * @param type - type of the vehicle;
+     * @return - the new price with the surcharge;
+     --------------------------------------------------------------------------------------------------------*/
+    public double mileageSurcharge(double price, int mileage, String type) {
+        double surchargePercentage = 0.0;
+
+        if (mileage >= 5001 && mileage <= 12000) {
+            if (type.equals("sedan") || type.equals("hatchback")) {
+                surchargePercentage = 0.03;
+            } else {
+                surchargePercentage = 0.05;
+            }
+        } else if (mileage >= 12001 && mileage <= 25000) {
+            if (type.equals("sedan") || type.equals("hatchback")) {
+                surchargePercentage = 0.07;
+            } else {
+                surchargePercentage = 0.09;
+            }
+        } else if (mileage >= 25001 && mileage <= 40000) {
+            surchargePercentage = 0.12;
+        } else {
+            surchargePercentage = 0.20;
+        }
+
+        double surchargeValue = price * surchargePercentage;
+        double newPrice = price + surchargeValue;
+
+        return newPrice;
+    }
 
 
 }

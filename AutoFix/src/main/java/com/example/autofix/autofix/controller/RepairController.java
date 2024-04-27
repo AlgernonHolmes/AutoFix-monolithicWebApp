@@ -42,7 +42,7 @@ public class RepairController {
     public List<RepairEntity> getRepairsByPlate(@PathVariable String plate){
         return repairService.getRepairsByPlate(plate);
     }
-    
+
     /* POST OPERATIONS */
 
     /*--------------------------------------------------------------------------------------------------------
