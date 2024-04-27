@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class RepairService {
@@ -199,38 +204,38 @@ public class RepairService {
      * @param price - repair price;
      * @param fabricationYear - fabrication year;
      * @param type - vehicle type;
-     * @return - the new price with the surcharge;
+     * @return - the amount to be surcharged;
      --------------------------------------------------------------------------------------------------------*/
 
     public double antiquitySurcharge(double price, int fabricationYear, String type){
 
         int antiquity = 2024 - fabricationYear;
-        double discountPercentage = 0.0;
+        double surchargePercentage = 0.0;
 
         if (antiquity >= 6 && antiquity <= 10) {
             if (type.equals("sedan") || type.equals("hatchback")) {
-                discountPercentage = 0.05;
+                surchargePercentage = 0.05;
             } else {
-                discountPercentage = 0.07;
+                surchargePercentage = 0.07;
             }
         } else if (antiquity >= 11 && antiquity <= 15) {
             if (type.equals("sedan") || type.equals("hatchback")) {
-                discountPercentage = 0.09;
+                surchargePercentage = 0.09;
             } else {
-                discountPercentage = 0.11;
+                surchargePercentage = 0.11;
             }
         } else if (antiquity >= 16) {
             if (type.equals("sedan") || type.equals("hatchback")) {
-                discountPercentage = 0.15;
+                surchargePercentage = 0.15;
             } else {
-                discountPercentage = 0.20;
+                surchargePercentage = 0.20;
             }
         }
 
-        double discountValue = price * discountPercentage;
-        double newPrice = price + discountValue;
+        double surchargeValue = price * surchargePercentage;
 
-        return newPrice;
+
+        return surchargeValue;
 
     }
 
@@ -241,18 +246,16 @@ public class RepairService {
      * @param price - repair price;
      * @param exitVDate - date given to take the vehicle;
      * @param exitCDate - date the customer took the vehicle;
-     * @return - the new price with the surcharge;
+     * @return - the amount to be surcharged;
      --------------------------------------------------------------------------------------------------------*/
-    public double delaySurcharge(double price, Date exitVDate, Date exitCDate) {
-        long diffInMillis = exitCDate.getTime() - exitVDate.getTime();
-        int diffInDays = (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+    public double delaySurcharge(double price, LocalDate exitVDate, LocalDate exitCDate) {
+        long diffInDays = ChronoUnit.DAYS.between(exitVDate, exitCDate);
         if (diffInDays <= 0) {
             return price;
         }
         double delaySurchargePercentage = 0.05;
-        double delaySurcharge = price * (double)diffInDays * delaySurchargePercentage;
-        double newPrice = price + delaySurcharge;
-        return newPrice;
+        double delaySurcharge = price * diffInDays * delaySurchargePercentage;
+        return delaySurcharge;
     }
 
 
@@ -262,7 +265,7 @@ public class RepairService {
      * @param price - repair price;
      * @param mileage - mileage of the vehicle;
      * @param type - type of the vehicle;
-     * @return - the new price with the surcharge;
+     * @return - the amount to be surcharged;
      --------------------------------------------------------------------------------------------------------*/
     public double mileageSurcharge(double price, int mileage, String type) {
         double surchargePercentage = 0.0;
@@ -286,10 +289,94 @@ public class RepairService {
         }
 
         double surchargeValue = price * surchargePercentage;
-        double newPrice = price + surchargeValue;
-
-        return newPrice;
+        return surchargeValue;
     }
+
+    /* DISCOUNTS */
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * dayDiscount: method to calculate day discount;
+     *
+     * @param price      - repair price;
+     * @param entryVDate - date of vehicle entry to the workshop;
+     * @param entryVTime - time of vehicle entry to the workshop;
+     * @return - the amount to be discounted;
+     --------------------------------------------------------------------------------------------------------*/
+
+    public double dayDiscount(double price, LocalDate entryVDate, LocalTime entryVTime) {
+        if ((entryVDate.getDayOfWeek() == DayOfWeek.MONDAY || entryVDate.getDayOfWeek() == DayOfWeek.THURSDAY)
+                && entryVTime.isAfter(LocalTime.of(9, 0)) && entryVTime.isBefore(LocalTime.of(12, 0))) {
+            return price * 0.1;
+        } else {
+            return 0;
+        }
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repAmountDiscount: method to calculate repair amount discount;
+     *
+     * @param plate      - vehicle plate number;
+     * @param engineType - type of engine (gasoline, diesel, hybrid, electric);
+     * @return - the discount percentage applied based on the repair quantity and engine type;
+     --------------------------------------------------------------------------------------------------------*/
+    public double repAmountDiscount(String plate, String engineType){
+        List<RepairEntity> repairs = repairRepository.findAllByVehiclePlate(plate);
+        LocalDate currentDate = LocalDate.now();
+        int repairQuantity = 0;
+        for (RepairEntity repair : repairs) {
+            if (ChronoUnit.MONTHS.between(repair.getEntryVDate(), currentDate) <= 12) {
+                repairQuantity = repairQuantity + 1;
+            }
+        }
+
+        double discount = 0;
+
+        if (repairQuantity >= 1 && repairQuantity <= 2) {
+            if (engineType.equalsIgnoreCase("gasolina")) {
+                discount = 0.05;
+            } else if (engineType.equalsIgnoreCase("diesel")) {
+                discount = 0.07;
+            } else if (engineType.equalsIgnoreCase("hibrido")) {
+                discount = 0.10;
+            } else if (engineType.equalsIgnoreCase("electrico")) {
+                discount = 0.08;
+            }
+        } else if (repairQuantity >= 3 && repairQuantity <= 5) {
+            if (engineType.equalsIgnoreCase("gasolina")) {
+                discount = 0.10;
+            } else if (engineType.equalsIgnoreCase("diesel")) {
+                discount = 0.12;
+            } else if (engineType.equalsIgnoreCase("hibrido")) {
+                discount = 0.15;
+            } else if (engineType.equalsIgnoreCase("electrico")) {
+                discount = 0.13;
+            }
+        } else if (repairQuantity >= 6 && repairQuantity <= 9) {
+            if (engineType.equalsIgnoreCase("gasolina")) {
+                discount = 0.15;
+            } else if (engineType.equalsIgnoreCase("diesel")) {
+                discount = 0.17;
+            } else if (engineType.equalsIgnoreCase("hibrido")) {
+                discount = 0.20;
+            } else if (engineType.equalsIgnoreCase("electrico")) {
+                discount = 0.18;
+            }
+        } else if (repairQuantity >= 10) {
+            if (engineType.equalsIgnoreCase("gasolina")) {
+                discount = 0.20;
+            } else if (engineType.equalsIgnoreCase("diesel")) {
+                discount = 0.22;
+            } else if (engineType.equalsIgnoreCase("hibrido")) {
+                discount = 0.25;
+            } else if (engineType.equalsIgnoreCase("electrico")) {
+                discount = 0.23;
+            }
+        }
+        return discount;
+    }
+
 
 
 }

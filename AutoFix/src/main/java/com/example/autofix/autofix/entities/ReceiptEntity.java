@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 @Entity
 @Table(name = "receipts")
@@ -20,7 +21,7 @@ public class ReceiptEntity {
     @Column(unique = true, nullable = false)
     private Long id;
     private double totalPayment;
-    private Date receiptDate;
+    private LocalDate receiptDate;
 
 
 }
