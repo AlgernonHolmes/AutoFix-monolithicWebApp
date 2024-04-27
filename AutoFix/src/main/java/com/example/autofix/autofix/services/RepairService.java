@@ -10,11 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -36,7 +34,7 @@ public class RepairService {
      * @return - a list with all repairs;
      --------------------------------------------------------------------------------------------------------*/
 
-    public ArrayList<RepairEntity> getRepairs(){
+    public ArrayList<RepairEntity> getRepairs() {
         return (ArrayList<RepairEntity>) repairRepository.findAll();
     }
 
@@ -47,7 +45,7 @@ public class RepairService {
      * @return - a list with all repairs with said plate;
      --------------------------------------------------------------------------------------------------------*/
 
-    public ArrayList<RepairEntity> getRepairsByPlate(String plate){
+    public ArrayList<RepairEntity> getRepairsByPlate(String plate) {
         return (ArrayList<RepairEntity>) repairRepository.findAllByVehiclePlate(plate);
     }
 
@@ -63,7 +61,7 @@ public class RepairService {
      * @param engineType - the engineType;
      * @return - the price assigned;
      --------------------------------------------------------------------------------------------------------*/
-    public int assignPrice(String repairType, String engineType){
+    public int assignPrice(String repairType, String engineType) {
         List<List<Integer>> prices = new ArrayList<>();
         prices.add(List.of(120000, 120000, 180000, 220000));
         prices.add(List.of(130000, 130000, 190000, 230000));
@@ -152,7 +150,7 @@ public class RepairService {
      * @return - null;
      --------------------------------------------------------------------------------------------------------*/
 
-    public void createRepair(String plate, RepairEntity repair){
+    public void createRepair(String plate, RepairEntity repair) {
         VehicleEntity lVehicle = vehicleRepository.findByRegistrationPlateWithRepairs(plate);
         int price = assignPrice(repair.getRepairType(), lVehicle.getEngineType());
         repair.setTotalCost(price);
@@ -174,7 +172,7 @@ public class RepairService {
      * @return - null;
      --------------------------------------------------------------------------------------------------------*/
 
-    public void updateRepair(RepairEntity updatedRepair){
+    public void updateRepair(RepairEntity updatedRepair) {
         repairRepository.save(updatedRepair);
     }
 
@@ -187,7 +185,7 @@ public class RepairService {
      * @return - null
      --------------------------------------------------------------------------------------------------------*/
 
-    public void deleteRepair(Long id){
+    public void deleteRepair(Long id) {
         repairRepository.deleteById(id);
     }
 
@@ -207,7 +205,7 @@ public class RepairService {
      * @return - the amount to be surcharged;
      --------------------------------------------------------------------------------------------------------*/
 
-    public double antiquitySurcharge(double price, int fabricationYear, String type){
+    public double antiquitySurcharge(double price, int fabricationYear, String type) {
 
         int antiquity = 2024 - fabricationYear;
         double surchargePercentage = 0.0;
@@ -292,8 +290,8 @@ public class RepairService {
         return surchargeValue;
     }
 
-    /* DISCOUNTS */
 
+    /* DISCOUNTS */
 
     /*--------------------------------------------------------------------------------------------------------
      * dayDiscount: method to calculate day discount;
@@ -321,7 +319,7 @@ public class RepairService {
      * @param engineType - type of engine (gasoline, diesel, hybrid, electric);
      * @return - the discount percentage applied based on the repair quantity and engine type;
      --------------------------------------------------------------------------------------------------------*/
-    public double repAmountDiscount(String plate, String engineType){
+    public double repAmountDiscount(String plate, String engineType) {
         List<RepairEntity> repairs = repairRepository.findAllByVehiclePlate(plate);
         LocalDate currentDate = LocalDate.now();
         int repairQuantity = 0;
@@ -378,5 +376,108 @@ public class RepairService {
     }
 
 
+    /* coupon discount */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * couponIndex: method to retrieve the index of a brand in a coupon list;
+     *
+     * @param brand - the brand of the vehicle;
+     * @return - the index of the brand in the coupon list, or -1 if the brand is not found;
+     --------------------------------------------------------------------------------------------------------*/
+    public int couponIndex(String brand) {
+        int index = -1;
+        switch (brand.toLowerCase()) {
+            case "toyota":
+                index = 0;
+                break;
+            case "ford":
+                index = 1;
+                break;
+            case "hyundai":
+                index = 2;
+                break;
+            case "honda":
+                index = 3;
+                break;
+        }
+        return index;
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * couponDiscount: method to calculate the discount amount for a specific brand;
+     *
+     * @param brand  - the brand of the vehicle;
+     * @param values - a list of lists containing coupon values, where the first list represents coupon amounts
+     *                and the second list represents coupon quantities for each brand;
+     * @return - the discount amount for the specified brand, or 0 if there are no coupons available for that brand;
+     --------------------------------------------------------------------------------------------------------*/
+    public double couponDiscount(String brand, List<List<Integer>> values) {
+        int index = couponIndex(brand);
+        double discount = 0;
+        int quantity = values.get(1).get(index);
+        if(quantity != 0){
+            discount = values.get(0).get(index);
+        }
+        return discount;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * couponAmount: method to update the quantity of coupons for a specific brand and return the updated list;
+     *
+     * @param brand  - the brand of the vehicle;
+     * @param values - a list of lists containing coupon values, where the first list represents coupon amounts
+     *                and the second list represents coupon quantities for each brand;
+     * @return - the updated list of coupon values after decrementing the quantity of coupons for the specified brand;
+     --------------------------------------------------------------------------------------------------------*/
+    public List<List<Integer>> couponAmount(String brand, List<List<Integer>> values){
+        int index = couponIndex(brand);
+        int quantity = values.get(1).get(index);
+        if(quantity != 0){
+            values.get(1).set(index, quantity - 1);
+        }
+        return values;
+    }
+
+
+    /* SURCHARGE APPLICATION */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * surchargeTotal: method to calculate the total surcharge for a repair;
+     *
+     * @param repair - the repair entity for which the surcharge is being calculated;
+     * @return - the total surcharge amount for the repair;
+     --------------------------------------------------------------------------------------------------------*/
+    public double surchargeTotal(RepairEntity repair){
+        double price = repair.getTotalCost();
+        String plate = repair.getVehiclePlate();
+        VehicleEntity vehicle = vehicleRepository.findByRegistrationPlate(plate);
+        double antSur = antiquitySurcharge(price, vehicle.getFabricationYear(), vehicle.getType());
+        double delSur = delaySurcharge(price, repair.getExitVDate(), repair.getExitCDate());
+        double milSur = mileageSurcharge(price, vehicle.getMilage(), vehicle.getType());
+        double totalSurcharge = antSur + delSur + milSur;
+        return totalSurcharge;
+    }
+
+    /* DISCOUNT APPLICATION */
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * innerDiscount: method to calculate the total internal discount for a repair;
+     *                (assuming autofix internal discounts only)
+     *
+     * @param repair - the repair entity for which the internal discount is being calculated;
+     * @return - the total internal discount amount for the repair;
+     --------------------------------------------------------------------------------------------------------*/
+    public double innerDiscount(RepairEntity repair){
+        double price = repair.getTotalCost();
+        String plate = repair.getVehiclePlate();
+        VehicleEntity vehicle = vehicleRepository.findByRegistrationPlate(plate);
+        double dayDis = dayDiscount(price, repair.getEntryVDate(), repair.getEntryVTime());
+        double repDisPercentage = repAmountDiscount(vehicle.getRegistrationPlate(), vehicle.getEngineType());
+        double repDis = repDisPercentage * price;
+        double inDiscount = dayDis + repDis;
+        return inDiscount;
+    }
 
 }

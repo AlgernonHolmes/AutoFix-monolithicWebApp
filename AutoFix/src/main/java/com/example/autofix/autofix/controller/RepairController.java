@@ -84,4 +84,39 @@ public class RepairController {
     public void deleteRepair(@PathVariable Long id) {
         repairService.deleteRepair(id);
     }
+
+
+    /* Business layer methods */
+
+    /* SURCHARGE APPLICATION */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * surchargeTotal: method to calculate the total surcharge for a repair;
+     *
+     * @param repair - the repair entity for which the surcharge is being calculated;
+     * @return - the total surcharge amount for the repair;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/surchargeTotal/")
+    public double surchargeTotal(@RequestBody RepairEntity repair){
+        return repairService.surchargeTotal(repair);
+    }
+
+    /* DISCOUNT APPLICATION */
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * innerDiscount: method to calculate the total internal discount for a repair;
+     *                (assuming autofix internal discounts only)
+     *
+     * @param repair - the repair entity for which the internal discount is being calculated;
+     * @return - the total internal discount amount for the repair;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/indiscount/")
+    public double innerDiscount(@RequestBody RepairEntity repair){
+        return repairService.innerDiscount(repair);
+    }
+
+
+
+
 }
