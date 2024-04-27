@@ -480,4 +480,117 @@ public class RepairService {
         return inDiscount;
     }
 
+
+
+    /* Business layer methods */
+
+    /* REPORTS */
+
+    /* R1 */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * calculationValues: method to calculate various values for a vehicle based on its repair history;
+     *
+     * @param plate - the registration plate number of the vehicle;
+     * @return - a list containing total costs, surcharges, and internal discounts for each repair associated
+     *           with the specified vehicle plate;
+     --------------------------------------------------------------------------------------------------------*/
+    public List<Double> calculationValues(String plate){
+        List<Double> calculationVal = new ArrayList<>();
+        List<RepairEntity> repairs = repairRepository.findAllByVehiclePlate(plate);
+        for(RepairEntity repair: repairs){
+            calculationVal.add(repair.getTotalCost());
+            calculationVal.add(surchargeTotal(repair));
+            calculationVal.add(innerDiscount(repair));
+        }
+        return calculationVal;
+    }
+
+
+    /* R2 */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * indexVehicleType: method to determine the index of a vehicle type.
+     *                   (assuming the vehicle types are sedan, hatchback, suv, pickup, and furgoneta)
+     *
+     * @param type - the type of vehicle (case-insensitive)
+     * @return - the index of the vehicle type (0 for sedan, 1 for hatchback, 2 for suv, 3 for pickup,
+     *           4 for furgoneta), or -1 if the type is not recognized.
+     --------------------------------------------------------------------------------------------------------*/
+
+    public int indexVehicleType(String type) {
+        return switch (type.toLowerCase()) {
+            case "sedan" -> 0;
+            case "hatchback" -> 1;
+            case "suv" -> 2;
+            case "pickup" -> 3;
+            case "furgoneta" -> 4;
+            default -> -1;
+        };
+    }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTypeIndex: method to determine the index of a repair type.
+     *                  (assuming the repair types are brakes, cooling, engine, transmission, electrical,
+     *                  exhaust, tires and wheels, suspension and steering, air conditioning and heating,
+     *                  fuel, and windshield and glass)
+     *
+     * @param repairType - the repair type (case-insensitive)
+     * @return - the index of the repair type (0 for brakes, 1 for cooling, 2 for engine, 3 for transmission,
+     *           4 for electrical, 5 for exhaust, 6 for tires and wheels, 7 for suspension and steering,
+     *           8 for air conditioning and heating, 9 for fuel, 10 for windshield and glass), or -1 if the
+     *           repair type is not recognized.
+     --------------------------------------------------------------------------------------------------------*/
+
+    public int repairTypeIndex(String repairType) {
+        return switch (repairType.toLowerCase()) {
+            case "frenos" -> 0;
+            case "refrigeracion" -> 1;
+            case "motor" -> 2;
+            case "transmision" -> 3;
+            case "electrico" -> 4;
+            case "escape" -> 5;
+            case "neumaticos y ruedas" -> 6;
+            case "suspension y la direccion" -> 7;
+            case "aire acondicionado y calefaccion" -> 8;
+            case "combustible" -> 9;
+            case "parabrisas y cristales" -> 10;
+            default -> -1; // Si el tipo de reparación no coincide con ninguno de los casos
+        };
+    }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTypeReport: method to generate a report of repair costs categorized by repair type and vehicle type.
+     *
+     * @return - a list of lists containing the total repair costs for each combination of repair type and
+     *           vehicle type.
+     --------------------------------------------------------------------------------------------------------*/
+    public List<List<Double>> repairTypeReport(){
+        int index_x, index_y;
+        double originalValue;
+
+        VehicleEntity vehicle;
+
+        List<List<Double>> repairTypes = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            List<Double> innerList = new ArrayList<>();
+            for (int j = 0; j < 5; j++) {
+                innerList.add(0.0);
+            }
+            repairTypes.add(innerList);
+        }
+
+        List<RepairEntity> DBrepairs = repairRepository.findAll();
+        for(RepairEntity repair: DBrepairs){
+            index_x = repairTypeIndex(repair.getRepairType());
+            vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
+            index_y = indexVehicleType(vehicle.getType());
+            originalValue = repairTypes.get(index_x).get(index_y);
+            repairTypes.get(index_x).set(index_y, (originalValue + repair.getTotalCost()));
+        }
+
+        return repairTypes;
+    }
+
+
 }

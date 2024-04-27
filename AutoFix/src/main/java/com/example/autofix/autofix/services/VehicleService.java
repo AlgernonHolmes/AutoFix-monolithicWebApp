@@ -1,10 +1,13 @@
 package com.example.autofix.autofix.services;
 
 
+import com.example.autofix.autofix.entities.RepairEntity;
 import com.example.autofix.autofix.entities.VehicleEntity;
+import com.example.autofix.autofix.repositories.RepairRepository;
 import com.example.autofix.autofix.repositories.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -16,6 +19,7 @@ public class VehicleService {
 
     @Autowired
     VehicleRepository vehicleRepository;
+
 
    /* GET OPERATIONS */
 

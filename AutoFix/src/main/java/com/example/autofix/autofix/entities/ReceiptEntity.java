@@ -21,6 +21,12 @@ public class ReceiptEntity {
     @Column(unique = true, nullable = false)
     private Long id;
     private double totalPayment;
+    private double totalSurcharge;
+    private double totalDiscount;
+    /* to be understood:
+      real payment = totalPayment + totalSurcharge - totalDiscount;
+     */
+    private double realPayment;
     private LocalDate receiptDate;
 
 
