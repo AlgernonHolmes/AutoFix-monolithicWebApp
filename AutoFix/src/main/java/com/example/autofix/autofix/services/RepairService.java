@@ -515,6 +515,22 @@ public class RepairService {
         return calculationVal;
     }
 
+    public List<List<Double>> calculationReport(){
+        List<RepairEntity> allRepairs = repairRepository.findAll();
+        List<String> plates = new ArrayList<>();
+        List<List<Double>> report = new ArrayList<>();
+
+        List<Double> innerList = new ArrayList<>();
+        for (RepairEntity repair: allRepairs) {
+            if( !(plates.contains(repair.getVehiclePlate().toLowerCase())) ){
+                innerList = calculationValues(repair.getVehiclePlate());
+                report.add(innerList);
+                plates.add(repair.getVehiclePlate().toLowerCase());
+            }
+        }
+
+        return report;
+    }
 
     /* R2 */
 

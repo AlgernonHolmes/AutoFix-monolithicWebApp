@@ -119,9 +119,9 @@ public class RepairController {
 
     /* REPORTS */
 
-    @GetMapping("/R1/{plate}")
-    public List<Double> R1(@PathVariable String plate){
-        return repairService.calculationValues(plate);
+    @GetMapping("/R1/")
+    public List<List<Double>> R1(){
+        return repairService.calculationReport();
     }
 
 }
