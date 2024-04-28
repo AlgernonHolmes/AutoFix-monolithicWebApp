@@ -32,7 +32,7 @@ public class RepairEntity {
     * exitVTime: vehicle exit time;
     * exitCTime: customer exit time; */
     private LocalTime exitVTime;
-    private LocalDate exitCTime;
+    private LocalTime exitCTime;
     /* next id will be the id
        of the corresponding vehicle */
     private String vehiclePlate;

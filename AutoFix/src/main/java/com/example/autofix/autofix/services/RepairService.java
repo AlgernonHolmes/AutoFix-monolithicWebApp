@@ -590,6 +590,7 @@ public class RepairService {
      * @return - a list of lists containing the total repair costs for each combination of repair type and
      *           vehicle type.
      --------------------------------------------------------------------------------------------------------*/
+    /* R2 FUNCTION */
     public List<List<Double>> repairTypeReport(){
         int index_x, index_y;
         double originalValue;
@@ -631,6 +632,9 @@ public class RepairService {
      * @return - the duration of the repair in hours;
      --------------------------------------------------------------------------------------------------------*/
     public double repairTime(LocalDate entryDate, LocalTime entryTime, LocalDate exitDate, LocalTime exitTime){
+        if (entryDate == null || entryTime == null || exitDate == null || exitTime == null) {
+            return 0.0;
+        }
         LocalDateTime entryDateTime = LocalDateTime.of(entryDate, entryTime);
         LocalDateTime exitDateTime = LocalDateTime.of(exitDate, exitTime);
         return (double) entryDateTime.until(exitDateTime, ChronoUnit.HOURS);
@@ -661,11 +665,10 @@ public class RepairService {
     /*--------------------------------------------------------------------------------------------------------
      * repairTimeReport: method to generate a report of average repair times for each vehicle brand;
      *
-     * This method calculates the average repair time for each vehicle brand based on the repair
-     * records in the database.
      *
      * @return - a list containing the average repair time for each vehicle brand;
      --------------------------------------------------------------------------------------------------------*/
+    /* R3 FUNCTION */
     public List<Double> repairTimeReport(){
         /* list with all avrg times*/
         List<Double> avrgRepairTime = new ArrayList<>();

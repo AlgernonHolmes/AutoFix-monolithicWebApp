@@ -143,4 +143,16 @@ public class RepairController {
         return repairService.repairTypeReport();
     }
 
+    /* R3 */
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTimeReport: method to generate a report of average repair times for each vehicle brand;
+     *
+     *
+     * @return - a list containing the average repair time for each vehicle brand;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/R3/")
+    public List<Double> R3(){
+        return repairService.repairTimeReport();
+    }
+
 }
