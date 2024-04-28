@@ -119,9 +119,28 @@ public class RepairController {
 
     /* REPORTS */
 
+    /* R1 */
+    /*--------------------------------------------------------------------------------------------------------
+     * calculationReport: Method to generate a calculation report based on vehicle repair history.
+     *
+     * @return - A list containing calculation reports for each vehicle.
+     --------------------------------------------------------------------------------------------------------*/
     @GetMapping("/R1/")
     public List<List<Double>> R1(){
         return repairService.calculationReport();
+    }
+
+
+    /* R2 */
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTypeReport: method to generate a report of repair costs categorized by repair type and vehicle type.
+     *
+     * @return - a list of lists containing the total repair costs for each combination of repair type and
+     *           vehicle type.
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/R2/")
+    public List<List<Double>> R2(){
+        return repairService.repairTypeReport();
     }
 
 }

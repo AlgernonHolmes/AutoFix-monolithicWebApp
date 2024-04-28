@@ -515,6 +515,12 @@ public class RepairService {
         return calculationVal;
     }
 
+    /*--------------------------------------------------------------------------------------------------------
+     * calculationReport: Method to generate a calculation report based on vehicle repair history.
+     *
+     * @return - A list containing calculation reports for each vehicle.
+     --------------------------------------------------------------------------------------------------------*/
+    /* R1 FUNCTION */
     public List<List<Double>> calculationReport(){
         List<RepairEntity> allRepairs = repairRepository.findAll();
         List<String> plates = new ArrayList<>();
@@ -535,12 +541,11 @@ public class RepairService {
     /* R2 */
 
     /*--------------------------------------------------------------------------------------------------------
-     * indexVehicleType: method to determine the index of a vehicle type.
-     *                   (assuming the vehicle types are sedan, hatchback, suv, pickup, and furgoneta)
+     * indexVehicleType: method to determine the index of a vehicle type;
      *
-     * @param type - the type of vehicle (case-insensitive)
-     * @return - the index of the vehicle type (0 for sedan, 1 for hatchback, 2 for suv, 3 for pickup,
-     *           4 for furgoneta), or -1 if the type is not recognized.
+     *
+     * @param type - the type of vehicle;
+     * @return - the index of the vehicle type;
      --------------------------------------------------------------------------------------------------------*/
 
     public int indexVehicleType(String type) {
@@ -555,16 +560,11 @@ public class RepairService {
     }
 
     /*--------------------------------------------------------------------------------------------------------
-     * repairTypeIndex: method to determine the index of a repair type.
-     *                  (assuming the repair types are brakes, cooling, engine, transmission, electrical,
-     *                  exhaust, tires and wheels, suspension and steering, air conditioning and heating,
-     *                  fuel, and windshield and glass)
+     * repairTypeIndex: method to determine the index of a repair type;
      *
-     * @param repairType - the repair type (case-insensitive)
-     * @return - the index of the repair type (0 for brakes, 1 for cooling, 2 for engine, 3 for transmission,
-     *           4 for electrical, 5 for exhaust, 6 for tires and wheels, 7 for suspension and steering,
-     *           8 for air conditioning and heating, 9 for fuel, 10 for windshield and glass), or -1 if the
-     *           repair type is not recognized.
+     *
+     * @param repairType - the repair type;
+     * @return - the index of the repair type;
      --------------------------------------------------------------------------------------------------------*/
 
     public int repairTypeIndex(String repairType) {
@@ -608,9 +608,9 @@ public class RepairService {
         List<RepairEntity> DBrepairs = repairRepository.findAll();
 
         for(RepairEntity repair: DBrepairs){
-            index_x = repairTypeIndex(repair.getRepairType());
+            index_x = repairTypeIndex(repair.getRepairType().toLowerCase());
             vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
-            index_y = indexVehicleType(vehicle.getType());
+            index_y = indexVehicleType(vehicle.getType().toLowerCase());
             originalValue = repairTypes.get(index_x).get(index_y);
             repairTypes.get(index_x).set(index_y, (originalValue + repair.getTotalCost()));
         }
