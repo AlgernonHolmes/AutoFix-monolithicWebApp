@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -413,36 +414,27 @@ public class RepairService {
 
 
     /*--------------------------------------------------------------------------------------------------------
-     * couponDiscount: method to calculate the discount amount for a specific brand;
+     * applyCoupont: method to update the quantity of coupons for a specific brand and return the updated list;
      *
-     * @param brand  - the brand of the vehicle;
-     * @param values - a list of lists containing coupon values, where the first list represents coupon amounts
-     *                and the second list represents coupon quantities for each brand;
-     * @return - the discount amount for the specified brand, or 0 if there are no coupons available for that brand;
-     --------------------------------------------------------------------------------------------------------*/
-    public double couponDiscount(String brand, List<List<Integer>> values) {
-        int index = couponIndex(brand);
-        double discount = 0;
-        int quantity = values.get(1).get(index);
-        if(quantity != 0){
-            discount = values.get(0).get(index);
-        }
-        return discount;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------
-     * couponAmount: method to update the quantity of coupons for a specific brand and return the updated list;
-     *
-     * @param brand  - the brand of the vehicle;
-     * @param values - a list of lists containing coupon values, where the first list represents coupon amounts
-     *                and the second list represents coupon quantities for each brand;
+     * @param repair - a repair
+     * @param values - a list of lists containing coupon values;
      * @return - the updated list of coupon values after decrementing the quantity of coupons for the specified brand;
      --------------------------------------------------------------------------------------------------------*/
-    public List<List<Integer>> couponAmount(String brand, List<List<Integer>> values){
+    public List<List<Double>> applyCoupon(Long idRepair, List<List<Double>> values){
+        RepairEntity repair = repairRepository.findById(idRepair).orElse(null);
+        if (repair == null) {
+            return values;
+        }
+        VehicleEntity vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
+        String brand = vehicle.getBrand();
         int index = couponIndex(brand);
-        int quantity = values.get(1).get(index);
+        double coupon = 0.0;
+        double quantity = values.get(1).get(index);
         if(quantity != 0){
-            values.get(1).set(index, quantity - 1);
+            coupon = values.get(0).get(index);
+            values.get(1).set(index, quantity - 1.0);
+            repair.setCouponAssigned(coupon);
+            repairRepository.save(repair);
         }
         return values;
     }
@@ -489,7 +481,6 @@ public class RepairService {
     }
 
 
-
     /* Business layer methods */
 
     /* REPORTS */
@@ -511,6 +502,7 @@ public class RepairService {
             calculationVal.add(surchargeTotal(repair));
             calculationVal.add(innerDiscount(repair));
             calculationVal.add( repair.getTotalCost() * 0.19);
+            calculationVal.add( repair.getCouponAssigned());
         }
         return calculationVal;
     }
@@ -741,6 +733,7 @@ public class RepairService {
      *
      * @return - a list of lists containing repair statistics for each vehicle engine and repair type;
      --------------------------------------------------------------------------------------------------------*/
+    /* R4 FUNCTION */
     public List<List<Double>> motorRepairReport(){
         int repairIndex, brandIndex;
         VehicleEntity vehicle;

@@ -23,6 +23,7 @@ public class RepairEntity {
     private LocalTime entryVTime;
     private String repairType;
     private double totalCost;
+    private double couponAssigned;
     /* I refer to
     *  exitVDate: vehicle exit date;
     *  exitCDate: customer exit date; */

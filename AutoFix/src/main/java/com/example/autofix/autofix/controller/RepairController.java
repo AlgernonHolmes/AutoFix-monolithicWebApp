@@ -116,6 +116,13 @@ public class RepairController {
         return repairService.innerDiscount(repair);
     }
 
+    /* COUPON APPLICATION */
+
+    @PostMapping("/coupon/{idRepair}")
+    public List<List<Double>> applyCoupon(@PathVariable Long idRepair, @RequestBody List<List<Double>> values){
+        return repairService.applyCoupon(idRepair, values);
+    }
+
 
     /* REPORTS */
 
@@ -155,4 +162,14 @@ public class RepairController {
         return repairService.repairTimeReport();
     }
 
+    /* R4 */
+    /*--------------------------------------------------------------------------------------------------------
+     * motorRepairReport: method to generate a report of repair statistics based on vehicle engine types and repair types;
+     *
+     * @return - a list of lists containing repair statistics for each vehicle engine and repair type;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/R4/")
+    public List<List<Double>> R4(){
+        return repairService.motorRepairReport();
+    }
 }
