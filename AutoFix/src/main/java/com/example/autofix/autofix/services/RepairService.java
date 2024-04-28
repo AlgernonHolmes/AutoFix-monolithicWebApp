@@ -248,6 +248,11 @@ public class RepairService {
      * @return - the amount to be surcharged;
      --------------------------------------------------------------------------------------------------------*/
     public double delaySurcharge(double price, LocalDate exitVDate, LocalDate exitCDate) {
+        /* in case required data is null */
+        if (exitVDate == null || exitCDate == null) {
+            return 0.0;
+        }
+
         long diffInDays = ChronoUnit.DAYS.between(exitVDate, exitCDate);
         if (diffInDays <= 0) {
             return price;
@@ -304,11 +309,13 @@ public class RepairService {
      --------------------------------------------------------------------------------------------------------*/
 
     public double dayDiscount(double price, LocalDate entryVDate, LocalTime entryVTime) {
-        if ((entryVDate.getDayOfWeek() == DayOfWeek.MONDAY || entryVDate.getDayOfWeek() == DayOfWeek.THURSDAY)
+        if (entryVDate == null || entryVTime == null) {
+            return 0.0;
+        } else if ((entryVDate.getDayOfWeek() == DayOfWeek.MONDAY || entryVDate.getDayOfWeek() == DayOfWeek.THURSDAY)
                 && entryVTime.isAfter(LocalTime.of(9, 0)) && entryVTime.isBefore(LocalTime.of(12, 0))) {
             return price * 0.1;
         } else {
-            return 0;
+            return 0.0;
         }
     }
 
@@ -557,7 +564,7 @@ public class RepairService {
             case "aire acondicionado y calefaccion" -> 8;
             case "combustible" -> 9;
             case "parabrisas y cristales" -> 10;
-            default -> -1; // Si el tipo de reparación no coincide con ninguno de los casos
+            default -> -1;
         };
     }
 
@@ -690,8 +697,62 @@ public class RepairService {
         return avrgRepairTime;
     }
 
+
     /* R4 */
 
-    
+    /*--------------------------------------------------------------------------------------------------------
+     * indexEngineType: method to obtain the numerical index corresponding to a given engine type;
+     *
+     * @param engineType - the engine type for which the numerical index is desired;
+     * @return - the numerical index corresponding to the engine type, or -1 if the engine type is not valid;
+     --------------------------------------------------------------------------------------------------------*/
+    public int indexEngineType(String engineType) {
+        return switch (engineType.toLowerCase()) {
+            case "gasolina" -> 0;
+            case "diesel" -> 1;
+            case "hibrido" -> 2;
+            case "electrico" -> 3;
+            default -> -1;
+        };
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * motorRepairReport: method to generate a report of repair statistics based on vehicle engine types and repair types;
+     *
+     * @return - a list of lists containing repair statistics for each vehicle engine and repair type;
+     --------------------------------------------------------------------------------------------------------*/
+    public List<List<Double>> motorRepairReport(){
+        int repairIndex, brandIndex;
+        VehicleEntity vehicle;
+        List<RepairEntity> allRepairs = repairRepository.findAll();
+
+        List<List<Double>> motorReport = new ArrayList<>();
+        /* list initial values */
+        for (int i = 0; i < 11; i++) {
+            List<Double> innerList = new ArrayList<>();
+            for (int j = 0; j < 5; j++) {
+                innerList.add(0.0);
+            }
+            motorReport.add(innerList);
+        }
+
+
+        for(RepairEntity repair : allRepairs) {
+
+            vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
+            String repairType = repair.getRepairType().toLowerCase();
+            repairIndex = repairTypeIndex(repairType);
+            brandIndex = indexEngineType(vehicle.getEngineType().toLowerCase());
+
+            motorReport.get(repairIndex).set(brandIndex,
+                    (motorReport.get(repairIndex).get(brandIndex) + 1)
+                    );
+            motorReport.get(repairIndex).set(4,
+                    (motorReport.get(repairIndex).get(4) + repair.getTotalCost())
+                    );
+        }
+        return motorReport;
+    }
 
 }
