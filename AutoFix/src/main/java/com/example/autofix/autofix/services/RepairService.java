@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -493,7 +494,7 @@ public class RepairService {
      *
      * @param plate - the registration plate number of the vehicle;
      * @return - a list containing total costs, surcharges, and internal discounts for each repair associated
-     *           with the specified vehicle plate;
+     *           with the specified vehicle plate, also, the IVA associated;
      --------------------------------------------------------------------------------------------------------*/
     public List<Double> calculationValues(String plate){
         List<Double> calculationVal = new ArrayList<>();
@@ -502,6 +503,7 @@ public class RepairService {
             calculationVal.add(repair.getTotalCost());
             calculationVal.add(surchargeTotal(repair));
             calculationVal.add(innerDiscount(repair));
+            calculationVal.add( repair.getTotalCost() * 0.19);
         }
         return calculationVal;
     }
@@ -581,6 +583,7 @@ public class RepairService {
         }
 
         List<RepairEntity> DBrepairs = repairRepository.findAll();
+
         for(RepairEntity repair: DBrepairs){
             index_x = repairTypeIndex(repair.getRepairType());
             vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
@@ -592,5 +595,103 @@ public class RepairService {
         return repairTypes;
     }
 
+
+    /* R3 */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTime: method to calculate the duration of a repair in hours;
+     *
+     * @param entryDate - the entry date of the vehicle for repair;
+     * @param entryTime - the entry time of the vehicle for repair;
+     * @param exitDate - the exit date of the vehicle after repair;
+     * @param exitTime - the exit time of the vehicle after repair;
+     * @return - the duration of the repair in hours;
+     --------------------------------------------------------------------------------------------------------*/
+    public double repairTime(LocalDate entryDate, LocalTime entryTime, LocalDate exitDate, LocalTime exitTime){
+        LocalDateTime entryDateTime = LocalDateTime.of(entryDate, entryTime);
+        LocalDateTime exitDateTime = LocalDateTime.of(exitDate, exitTime);
+        return (double) entryDateTime.until(exitDateTime, ChronoUnit.HOURS);
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * allBrands: method to retrieve a list of unique vehicle brand names from a list of vehicles;
+     *
+     * @return - a list containing unique brand names of vehicles;
+     --------------------------------------------------------------------------------------------------------*/
+    public List<String> allBrands(){
+
+        List<VehicleEntity> vehicles = vehicleRepository.findAll();
+        List<String> allBrands = new ArrayList<>();
+        String brandName = "";
+
+        for(VehicleEntity vehicle : vehicles){
+            brandName = vehicle.getBrand().toLowerCase();
+            if(!allBrands.contains(brandName)){
+                allBrands.add(brandName);
+            }
+        }
+        return allBrands;
+    }
+
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTimeReport: method to generate a report of average repair times for each vehicle brand;
+     *
+     * This method calculates the average repair time for each vehicle brand based on the repair
+     * records in the database.
+     *
+     * @return - a list containing the average repair time for each vehicle brand;
+     --------------------------------------------------------------------------------------------------------*/
+    public List<Double> repairTimeReport(){
+        /* list with all avrg times*/
+        List<Double> avrgRepairTime = new ArrayList<>();
+
+        List<String> allBrands = allBrands();
+        /* list to divide and to get average*/
+        List<Double> timeDivision = new ArrayList<Double>();
+        for(String brands : allBrands){
+            timeDivision.add(1.0);
+            avrgRepairTime.add(0.0);
+        }
+
+        int index = 0;
+        List<RepairEntity> repairs = repairRepository.findAll();
+        VehicleEntity vehicle;
+
+        /* we iterate through all repairs and add all repairTimes
+           associated with them; we get a list with all the total
+           time of all brands, and another list with the amount of
+           repairs associated with said brand; next, we will divide
+           to get the average
+         */
+        for(RepairEntity repair : repairs){
+            vehicle = vehicleRepository.findByRegistrationPlate(repair.getVehiclePlate());
+            index = allBrands.indexOf(vehicle.getBrand().toLowerCase());
+            timeDivision.set(index, (timeDivision.get(index) + 1.0) );
+            avrgRepairTime.set(index, (avrgRepairTime.get(index) +
+                    repairTime(repair.getEntryVDate(), repair.getEntryVTime(),
+                               repair.getExitCDate(), repair.getExitVTime()))
+                    );
+        }
+
+        /*
+            now, we divide the total of the reparation times with the
+            amount of times we added a repair; thus, we get a list with
+            the average repair time for each brand;
+         */
+        for(int i = 0; i < allBrands.size(); i++){
+            avrgRepairTime.set( i,
+                    (avrgRepairTime.get(i) )/ (timeDivision.get(i))
+                    );
+        }
+
+
+        return avrgRepairTime;
+    }
+
+    /* R4 */
+
+    
 
 }
