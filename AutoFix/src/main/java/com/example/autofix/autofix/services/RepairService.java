@@ -416,7 +416,7 @@ public class RepairService {
     /*--------------------------------------------------------------------------------------------------------
      * applyCoupont: method to update the quantity of coupons for a specific brand and return the updated list;
      *
-     * @param repair - a repair
+     * @param idRepair - the id of the repair;
      * @param values - a list of lists containing coupon values;
      * @return - the updated list of coupon values after decrementing the quantity of coupons for the specified brand;
      --------------------------------------------------------------------------------------------------------*/
