@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 @Entity
@@ -23,11 +24,14 @@ public class ReceiptEntity {
     private double totalPayment;
     private double totalSurcharge;
     private double totalDiscount;
+    private double couponAssigned;
     /* to be understood:
       real payment = totalPayment + totalSurcharge - totalDiscount;
      */
     private double realPayment;
+    private String vehiclePlate;
     private LocalDate receiptDate;
+    private LocalTime receiptTime;
 
 
 }
