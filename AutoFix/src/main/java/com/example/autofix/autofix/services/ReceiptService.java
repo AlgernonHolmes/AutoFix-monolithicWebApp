@@ -43,10 +43,46 @@ public class ReceiptService {
         return (List<ReceiptEntity>) receiptRepository.findAll();
     }
 
+    /* POST OPERATIONS */
 
-    
+    public ReceiptEntity createReceipt(String plate){
+        ReceiptEntity receipt = new ReceiptEntity();
+        receipt.setVehiclePlate(plate);
+        double totalPayment = receiptTotalPayment(plate);
+        receipt.setTotalPayment(totalPayment);
+        applySurAndDis(receipt);
+        /* we stablish actual date and time */
+        LocalDate currentDate = LocalDate.now();
+        receipt.setReceiptDate(currentDate);
+        LocalTime currentTime = LocalTime.now();
+        receipt.setReceiptTime(currentTime);
+        /* we save the receipt */
+        receiptRepository.save(receipt);
+        return receipt;
+    }
+
+
 
     /* Business layer methods */
+
+    /* RECEIPT TOTAL AMOUNT */
+
+    /*--------------------------------------------------------------------------------------------------------
+     * receiptTotalPayment: method to calculate the total payment for all repairs associated with a specific vehicle plate;
+     *
+     * @param plate - the vehicle plate for which the total payment is to be calculated;
+     * @return - the total payment amount for all repairs associated with the specified vehicle plate;
+     --------------------------------------------------------------------------------------------------------*/
+    public double receiptTotalPayment(String plate){
+        List<RepairEntity> repairs = repairRepository.findAllByVehiclePlate(plate);
+        double totalPayment = 0.0;
+        for(RepairEntity repair : repairs){
+            totalPayment = totalPayment + repair.getTotalCost();
+        }
+        return totalPayment;
+    }
+
+
 
 
     /* SURCHARGES */
