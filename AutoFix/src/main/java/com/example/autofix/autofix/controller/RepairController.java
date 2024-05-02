@@ -53,9 +53,9 @@ public class RepairController {
      * @return - null;
      --------------------------------------------------------------------------------------------------------*/
 
-    @PostMapping("/{plate}")
-    public void createRepair(@PathVariable String plate, @RequestBody RepairEntity repair) {
-        repairService.createRepair(plate, repair);
+    @PostMapping("/")
+    public void createRepair(@RequestBody RepairEntity repair) {
+        repairService.createRepair(repair.getVehiclePlate(), repair);
     }
 
     /* UPDATE OPERATIONS */

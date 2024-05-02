@@ -66,7 +66,7 @@ public class VehicleController {
      --------------------------------------------------------------------------------------------------------*/
     @PutMapping("/{id}")
     public void updateVehicle(@PathVariable Long id, @RequestBody VehicleEntity updatedVehicle) {
-        updatedVehicle.setId(id); // Asegurar que el ID del vehículo actualizado sea el mismo que se pasa en la URL
+        updatedVehicle.setId(id);
         vehicleService.updateVehicle(updatedVehicle);
     }
 
