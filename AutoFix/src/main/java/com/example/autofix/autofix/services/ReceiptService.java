@@ -45,6 +45,12 @@ public class ReceiptService {
 
     /* POST OPERATIONS */
 
+    /*--------------------------------------------------------------------------------------------------------
+     * createReceipt: method to create a new receipt entity and save it in the database;
+     *
+     * @param plate - the vehicle plate associated with the receipt;
+     * @return - the newly created receipt entity;
+     --------------------------------------------------------------------------------------------------------*/
     public ReceiptEntity createReceipt(String plate){
         ReceiptEntity receipt = new ReceiptEntity();
         receipt.setVehiclePlate(plate);
@@ -299,7 +305,6 @@ public class ReceiptService {
 
     /* SURCHARGE APPLICATION */
 
-
     /*--------------------------------------------------------------------------------------------------------
      * surchargeTotal: method to apply all surcharges;
      *
@@ -381,8 +386,8 @@ public class ReceiptService {
     /*--------------------------------------------------------------------------------------------------------
      * applyCoupont: method to update the quantity of coupons for a specific brand and return the updated list;
      *
-     * @param idRepair - the id of the repair;
-     * @param values - a list of lists containing coupon values;
+     * @param plate - plate of the vehicle;
+     * @param coupon - a list of lists containing coupon values;
      * @return - the updated list of coupon values after decrementing the quantity of coupons for the specified brand;
      --------------------------------------------------------------------------------------------------------*/
     public List<List<Double>> applyCoupon(String plate, List<List<Double>> coupons){
