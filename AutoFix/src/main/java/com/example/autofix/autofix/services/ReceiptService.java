@@ -415,7 +415,7 @@ public class ReceiptService {
      * @param plate - the vehicle plate for which the real payment is to be applied;
      * @return - the amount of calculated real payment applied to the receipt associated with the specified vehicle plate;
      --------------------------------------------------------------------------------------------------------*/
-    public double applyRealPayment(String plate){
+    public ReceiptEntity applyRealPayment(String plate){
         ReceiptEntity receipt = receiptRepository.findByVehiclePlate(plate);
         double realPayment = (receipt.getTotalPayment() + receipt.getTotalSurcharge() -
                              receipt.getTotalDiscount());
@@ -423,7 +423,7 @@ public class ReceiptService {
         realPayment = realPayment - receipt.getCouponAssigned();
         receipt.setRealPayment(realPayment);
         receiptRepository.save(receipt);
-        return receipt.getRealPayment();
+        return receipt;
     }
 
 

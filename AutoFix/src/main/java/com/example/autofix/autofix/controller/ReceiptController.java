@@ -65,7 +65,7 @@ public class ReceiptController {
      * @return - the amount of calculated real payment applied to the receipt associated with the specified vehicle plate;
      --------------------------------------------------------------------------------------------------------*/
     @PostMapping("/realpayment/{plate}")
-    public double applyRealPayment(@PathVariable String plate){
+    public ReceiptEntity applyRealPayment(@PathVariable String plate){
         return receiptService.applyRealPayment(plate);
     }
 }
