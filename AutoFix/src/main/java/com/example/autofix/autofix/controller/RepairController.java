@@ -85,6 +85,38 @@ public class RepairController {
         repairService.deleteRepair(id);
     }
 
+    /* Business layer methods */
 
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTypeReport: method to generate a report of repair costs categorized by repair type and vehicle type.
+     *
+     * @return - a list of lists containing the total repair costs for each combination of repair type and
+     *           vehicle type.
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/r2")
+    public List<List<Double>> R2(){
+        return repairService.repairTypeReport();
+    }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * repairTimeReport: method to generate a report of average repair times for each vehicle brand;
+     *
+     *
+     * @return - a list containing the average repair time for each vehicle brand;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/r3")
+    public List<Double> R3(){
+        return repairService.repairTimeReport();
+    }
+
+    /*--------------------------------------------------------------------------------------------------------
+     * motorRepairReport: method to generate a report of repair statistics based on vehicle engine types and repair types;
+     *
+     * @return - a list of lists containing repair statistics for each vehicle engine and repair type;
+     --------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/r4")
+    public List<List<Double>> R4(){
+        return repairService.motorRepairReport();
+    }
 
 }
